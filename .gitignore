@@ -1,0 +1,6 @@
+.claude/
+.serena/
+node_modules/
+marketing/out/
+marketing/public/frames/
+.DS_Store

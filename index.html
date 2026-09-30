@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Last Train North</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud" class="hidden">
+  <!-- Resources: top-left -->
+  <div id="resources" class="plate">
+    <div class="res" id="r-parts"><img src="assets/icon_parts.png" alt=""><div><b id="parts">0</b><span>PARTS</span></div></div>
+    <div class="res" id="r-supplies"><img src="assets/icon_supplies.png" alt=""><div><b id="supplies">0</b><span>SUPPLIES</span></div></div>
+    <div class="res" id="r-ammo"><img src="assets/icon_ammo.png" alt=""><div><b id="ammo">0</b><span>AMMO</span></div></div>
+    <div class="consist"><img src="assets/icon_train.png" alt=""><span id="cars"></span></div>
+  </div>
+
+  <!-- Engine console: bottom-left -->
+  <div id="console" class="plate">
+    <div class="gauge">
+      <img src="assets/hud_gauge.png" alt="">
+      <canvas id="needle" width="220" height="220"></canvas>
+      <div class="gauge-read"><b id="speed">0</b><span>KM/H</span></div>
+    </div>
+    <div class="lever"><div class="lever-track"><div class="lever-mid"></div><div id="throttle-bar"></div></div><span id="lever-label">THROTTLE</span></div>
+    <div class="meters">
+      <div class="meter">
+        <div class="mhead"><img src="assets/icon_hull.png" alt=""><span>HULL</span><b id="hp-text"></b></div>
+        <div class="bar"><div id="hp-bar" class="fill hp"></div></div>
+      </div>
+      <div class="meter">
+        <div class="mhead"><img src="assets/icon_fuel.png" alt=""><span>FUEL</span><b id="fuel-text"></b></div>
+        <div class="bar"><div id="fuel-bar" class="fill fuel"></div></div>
+      </div>
+      <div id="threat" class="threat hidden"><img src="assets/icon_target.png" alt=""><span id="threat-text"></span></div>
+    </div>
+  </div>
+
+  <!-- Objective + minimap: top-right -->
+  <div id="objpanel">
+    <div class="plate objplate">
+      <div id="zone" class="zone"></div>
+      <div id="objective" class="objective"></div>
+      <div id="dist-north" class="dist"></div>
+    </div>
+    <div class="mapring">
+      <canvas id="minimap" width="240" height="240"></canvas>
+      <img src="assets/hud_ring.png" alt="">
+    </div>
+  </div>
+
+  <div id="junction" class="hidden">
+    <div class="jtitle">JUNCTION <span id="j-dist"></span></div>
+    <div class="jopts">
+      <div id="j-left" class="jopt"><div class="jkey">◀ A</div><div class="jname"></div><div class="jdesc"></div></div>
+      <div id="j-right" class="jopt"><div class="jkey">D ▶</div><div class="jname"></div><div class="jdesc"></div></div>
+    </div>
+  </div>
+
+  <div id="hazard-warn" class="hidden"><img src="assets/icon_warning.png" alt=""><span id="hazard-text"></span></div>
+  <div id="messages"></div>
+  <div id="prompt" class="plate hidden">
+    <div id="prompt-text"></div>
+    <div id="prompt-progress" class="hidden"><div id="prompt-bar"></div></div>
+    <div id="prompt-sub"></div>
+  </div>
+  <div id="markers"></div>
+  <div id="floaters"></div>
+  <div id="damage-flash"></div>
+</div>
+
+<div id="start-screen" class="screen">
+  <div class="card">
+    <img class="logo" src="assets/hud_logo.png" alt="LAST TRAIN NORTH">
+    <h2>Keep the train moving. Reach the north.</h2>
+    <p class="story">The south has fallen. Your armored locomotive is the last way out.
+      Follow the broken railway north to the <b>Evacuation Station</b>. Manage fuel, salvage what you can,
+      fight off raiders and the things in the snow, and choose your route at every junction.</p>
+    <div class="controls">
+      <div><kbd>W</kbd>/<kbd>↑</kbd> Throttle</div>
+      <div><kbd>S</kbd>/<kbd>↓</kbd> Brake · hold when stopped to reverse</div>
+      <div><kbd>A</kbd>/<kbd>D</kbd> Choose branch at junctions</div>
+      <div><kbd>Space</kbd> Fire turret at nearest enemy</div>
+      <div><kbd>E</kbd> Salvage · repair track · couple cars</div>
+      <div><kbd>R</kbd> Patch hull (Parts) · <kbd>F</kbd> Burn supplies for fuel</div>
+      <div><kbd>Esc</kbd> Pause · <kbd>Mouse wheel</kbd> Zoom</div>
+    </div>
+    <p class="tips">Stop near <b>beacons</b> to salvage. Slow down for debris. Blocked track must be cleared with <kbd>E</kbd>.
+      Fuel only burns while the engine works — coast when you can.</p>
+    <div class="menu-btns"><button id="btn-start" class="big">Start Game</button>
+      <div class="btnrow small"><button id="btn-settings" class="secondary">Settings</button><button id="btn-board" class="secondary">Leaderboard</button></div></div>
+  </div>
+</div>
+
+<div id="pause-screen" class="screen hidden">
+  <div class="card small">
+    <h1>PAUSED</h1>
+    <div class="btncol"><button id="btn-resume" class="big">Resume</button>
+    <button id="btn-settings2" class="secondary">Settings</button>
+    <button id="btn-restart" class="secondary">Restart Journey</button></div>
+  </div>
+</div>
+
+<div id="end-screen" class="screen hidden">
+  <div class="card">
+    <h1 id="end-title"></h1>
+    <h2 id="end-reason"></h2>
+    <table id="end-stats"></table>
+    <div id="end-score"></div>
+    <div id="end-records"></div>
+    <div class="btnrow"><button id="btn-again" class="big">Restart Journey</button><button id="btn-board2" class="secondary">Leaderboard</button></div>
+  </div>
+</div>
+
+<div id="settings-screen" class="screen hidden">
+  <div class="card wide">
+    <h1>SETTINGS</h1>
+    <h3>CHOOSE YOUR LOCOMOTIVE</h3>
+    <div id="train-cards" class="tcards"></div>
+    <p class="note">The locomotive applies from the next journey.</p>
+    <label class="toggle"><input type="checkbox" id="opt-fps"><span class="switch"></span>Show FPS counter</label>
+    <div class="btnrow"><button id="btn-settings-close" class="big">Done</button></div>
+  </div>
+</div>
+
+<div id="board-screen" class="screen hidden">
+  <div class="card wide board">
+    <h1>LEADERBOARD</h1>
+    <div id="board-tabs" class="tabs"></div>
+    <div class="board-wrap"><table id="board-table"></table></div>
+    <div id="board-empty" class="note hidden">No finished journeys yet. Your wins and losses will be recorded here.</div>
+    <div class="btnrow"><button id="btn-board-close" class="big">Back</button><button id="btn-board-clear" class="secondary">Clear Records</button></div>
+  </div>
+</div>
+
+<div id="fps" class="hidden"></div>
+
+<div id="error-screen" class="screen hidden">
+  <div class="card small"><h1>Cannot start</h1><p id="error-text"></p></div>
+</div>
+
+<script>
+  // Surfaces load failures (CDN offline, no module support, script errors) instead of a blank page.
+  window.__ltnFail = function (msg) {
+    document.getElementById('error-text').textContent = msg;
+    document.getElementById('error-screen').classList.remove('hidden');
+    document.getElementById('start-screen').classList.add('hidden');
+  };
+  setTimeout(function () {
+    if (!window.__ltnReady && !window.__ltnFailed) window.__ltnFail('The game failed to load. Three.js is loaded from cdn.jsdelivr.net — check your internet connection, and serve this folder over HTTP (python -m http.server 8080).');
+  }, 15000);
+</script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
