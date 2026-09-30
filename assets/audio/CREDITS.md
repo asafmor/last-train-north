@@ -15,3 +15,10 @@ All sounds are from [OpenGameArt.org](https://opengameart.org). They were trimme
 | ding, chimes, alarm, click, negative | [UI sound effects](https://opengameart.org/content/ui-sound-effects-button-clicks-user-feedback-notifications) | Robin Lamb | CC0 |
 | engine_loop | [Engine loop (heavy vehicle/tank)](https://opengameart.org/content/engine-loop-heavy-vehicletank) | nayckron | CC-BY 3.0 |
 | rumble_loop | [Background rumble noise](https://opengameart.org/content/background-rumble-noise) | gryc | CC-BY 3.0 |
+
+## Trailer music (marketing/)
+
+| Track | Source | Author | License |
+| --- | --- | --- | --- |
+| Adventure Theme Intro | [OpenGameArt](https://opengameart.org/content/adventure-intro-title-cinematic-epic) | nene | CC0 |
+| Battle Theme A | [OpenGameArt](https://opengameart.org/content/battle-theme-a) | cynicmusic | CC0 |

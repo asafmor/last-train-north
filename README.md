@@ -1,5 +1,11 @@
 # Last Train North
 
+**[▶ Play it now in your browser](https://asafmor.github.io/last-train-north/)**: no install, no account.
+
+[![Watch the trailer](media/trailer-preview.gif)](https://asafmor.github.io/last-train-north/media/trailer.mp4)
+
+*[Watch the full trailer (MP4, 1 min)](https://asafmor.github.io/last-train-north/media/trailer.mp4)*
+
 A 3D isometric survival/strategy browser game. You don't control a person, you control the train:
 it is your vehicle, base, inventory, weapon and health bar. Keep it moving north to the Evacuation Station.
 
@@ -61,4 +67,6 @@ A typical successful run takes 9–13 minutes.
 - `src/leaderboard.js`: local high-score tables
 - `assets/`: textures, sprites, icons, HUD art, locomotive cards and key art generated with the Codex CLI. `assets/raw/` holds the originals.
 - `assets/audio/`: sound effects from OpenGameArt (CC0 / CC-BY). Credits are in `assets/audio/CREDITS.md`.
+- `marketing/`: the Remotion trailer project and gameplay capture scripts (see `marketing/README.md`)
+- `media/`: the rendered trailer, GIF preview and poster
 - `tools/process_assets.py`: converts `assets/raw/*` into the web-ready files (needs Pillow and numpy)
