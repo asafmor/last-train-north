@@ -69,4 +69,5 @@ A typical successful run takes 9–13 minutes.
 - `assets/audio/`: sound effects from OpenGameArt (CC0 / CC-BY). Credits are in `assets/audio/CREDITS.md`.
 - `marketing/`: the Remotion trailer project and gameplay capture scripts (see `marketing/README.md`)
 - `media/`: the rendered trailer, GIF preview and poster
+- `docs/browser-game-dev-guide.md`: a general guide to building games like this one with a coding agent
 - `tools/process_assets.py`: converts `assets/raw/*` into the web-ready files (needs Pillow and numpy)
